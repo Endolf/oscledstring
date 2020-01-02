@@ -6,6 +6,7 @@
 #include <OSCMessage.h>
 #include <OSCBundle.h>
 #include <OSCData.h>
+#include <FastLED.h>
 
 static const char buildInfoLogString[] = "Build data: %s, %s %s";
 
@@ -16,6 +17,7 @@ char logBuffer[256];
 
 WiFiUDP Udp;
 OSCErrorCode error;
+CRGB leds[NUM_LEDS];
 
 void setup()
 {
@@ -30,6 +32,12 @@ void setup()
     Udp.begin(OSCPORT);
     sprintf(logBuffer, "OSC Listening on port %d", OSCPORT);
     Serial.println(logBuffer);
+
+    FastLED.addLeds<LED_TYPE,LED_DATA_PIN,COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
+    FastLED.setBrightness(BRIGHTNESS);
+
+    FastLED.showColor(CRGB(0,0,255));
+    fadeToBlackBy(leds, NUM_LEDS, 20);
 }
 
 void solidColour(OSCMessage &msg)
@@ -43,6 +51,8 @@ void solidColour(OSCMessage &msg)
 
     sprintf(logBuffer, "Got solid colour request for 0x%2.2X%2.2X%2.2x%2.2X - (%u)", r, g, b, a, colourAsInt);
     Serial.println(logBuffer);
+
+    fill_solid(leds, NUM_LEDS, CRGB(r, g, b));
 }
 
 void loop()
@@ -68,4 +78,6 @@ void loop()
             Serial.println(error);
         }
     }
+
+    FastLED.show();
 }
