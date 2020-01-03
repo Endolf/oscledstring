@@ -36,23 +36,26 @@ void setup()
     FastLED.addLeds<LED_TYPE,LED_DATA_PIN,COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
     FastLED.setBrightness(BRIGHTNESS);
 
-    FastLED.showColor(CRGB(0,0,255));
-    fadeToBlackBy(leds, NUM_LEDS, 20);
+    fill_solid(leds, NUM_LEDS, CRGB(0,0,255));
 }
 
 void solidColour(OSCMessage &msg)
 {
-    uint32_t colourAsInt = msg.getInt(0);
-    uint8_t r,g,b,a;
-    r = (colourAsInt >> 24) & 255;
-    g = (colourAsInt >> 16) & 255;
-    b = (colourAsInt >> 8) & 255;
-    a = colourAsInt & 255;
+    if(msg.isInt(0))
+    {
+        uint32_t colourAsInt = msg.getInt(0);
+        uint8_t r,g,b;
+        r = (colourAsInt >> 24) & 255;
+        g = (colourAsInt >> 16) & 255;
+        b = (colourAsInt >> 8) & 255;
 
-    sprintf(logBuffer, "Got solid colour request for 0x%2.2X%2.2X%2.2x%2.2X - (%u)", r, g, b, a, colourAsInt);
-    Serial.println(logBuffer);
+        sprintf(logBuffer, "Got solid colour request for 0x%2.2X%2.2X%2.2X - (%u)", r, g, b, colourAsInt);
+        Serial.println(logBuffer);
 
-    fill_solid(leds, NUM_LEDS, CRGB(r, g, b));
+        fill_solid(leds, NUM_LEDS, CRGB(colourAsInt));
+    } else {
+        Serial.println("Solid colour called but arg 0 was not an int");
+    }
 }
 
 void loop()
@@ -69,7 +72,7 @@ void loop()
         }
         if (!msg.hasError())
         {
-            msg.dispatch("/solid", solidColour);
+            msg.dispatch("/*/solidColour", solidColour);
         }
         else
         {
@@ -79,5 +82,7 @@ void loop()
         }
     }
 
-    FastLED.show();
+    EVERY_N_MILLISECONDS(1000/FRAMES_PER_SECOND) {
+        FastLED.show();
+    }
 }
