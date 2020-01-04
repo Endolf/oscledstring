@@ -9,5 +9,5 @@ RainbowLightingState::RainbowLightingState(CRGB leds[], int numLeds) {
 void RainbowLightingState::update()
 {
     fill_rainbow(leds,numLeds,hue);
-    hue++;
+    hue--;
 };
