@@ -7,6 +7,8 @@
 #include <OSCBundle.h>
 #include <OSCData.h>
 #include <FastLED.h>
+#include <lightingstate.h>
+#include <solidcolourstate.h>
 
 static const char buildInfoLogString[] = "Build data: %s, %s %s";
 
@@ -18,6 +20,9 @@ char logBuffer[256];
 WiFiUDP Udp;
 OSCErrorCode error;
 CRGB leds[NUM_LEDS];
+SolidColourState scs;
+
+LightingState* currentLightingState;
 
 void setup()
 {
@@ -36,7 +41,8 @@ void setup()
     FastLED.addLeds<LED_TYPE,LED_DATA_PIN,COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
     FastLED.setBrightness(BRIGHTNESS);
 
-    fill_solid(leds, NUM_LEDS, CRGB(0,64,0));
+    scs.setColour(CRGB(0,64,0));
+    currentLightingState = &scs;
 }
 
 void solidColour(OSCMessage &msg)
@@ -52,7 +58,8 @@ void solidColour(OSCMessage &msg)
         sprintf(logBuffer, "Got solid colour request for 0x%2.2X%2.2X%2.2X - (%u)", r, g, b, colourAsInt);
         Serial.println(logBuffer);
 
-        fill_solid(leds, NUM_LEDS, CRGB(colourAsInt));
+        scs.setColour(CRGB(colourAsInt));
+        currentLightingState = &scs;
     } else {
         Serial.println("Solid colour called but arg 0 was not an int");
     }
@@ -67,9 +74,8 @@ void solidColourRed(OSCMessage &msg)
         sprintf(logBuffer, "Got solid colour red request for 0x%2.2X", r);
         Serial.println(logBuffer);
 
-        for(int i=0;i<NUM_LEDS;i++) {
-            leds[i][0] = r;
-        }
+        scs.setRed(r);
+        currentLightingState = &scs;
     } else {
         Serial.println("Solid colour red called but arg 0 was not a float");
     }
@@ -84,9 +90,8 @@ void solidColourGreen(OSCMessage &msg)
         sprintf(logBuffer, "Got solid colour green request for 0x%2.2X", g);
         Serial.println(logBuffer);
 
-        for(int i=0;i<NUM_LEDS;i++) {
-            leds[i][1] = g;
-        }
+        scs.setGreen(g);
+        currentLightingState = &scs;
     } else {
         Serial.println("Solid colour green called but arg 0 was not a float");
     }
@@ -101,9 +106,8 @@ void solidColourBlue(OSCMessage &msg)
         sprintf(logBuffer, "Got solid colour blue request for 0x%2.2X", b);
         Serial.println(logBuffer);
 
-        for(int i=0;i<NUM_LEDS;i++) {
-            leds[i][2] = b;
-        }
+        scs.setBlue(b);
+        currentLightingState = &scs;
     } else {
         Serial.println("Solid colour blue called but arg 0 was not a float");
     }
@@ -137,6 +141,7 @@ void loop()
     }
 
     EVERY_N_MILLISECONDS(1000/FRAMES_PER_SECOND) {
+        currentLightingState->update(leds, NUM_LEDS);
         FastLED.show();
     }
 }
