@@ -8,7 +8,10 @@
 
 class LightingState {
     public:
-        virtual void update(CRGB leds[], int numLeds) = 0;
+        virtual void update() = 0;
+    protected:
+        CRGB* leds;
+        int numLeds;
 };
 
 #endif

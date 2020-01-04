@@ -7,8 +7,9 @@
 #include <OSCBundle.h>
 #include <OSCData.h>
 #include <FastLED.h>
-#include <lightingstate.h>
-#include <solidcolourstate.h>
+#include "lightingstate.h"
+#include "solidcolourstate.h"
+#include "firelightingstate.h"
 
 static const char buildInfoLogString[] = "Build data: %s, %s %s";
 
@@ -20,7 +21,9 @@ char logBuffer[256];
 WiFiUDP Udp;
 OSCErrorCode error;
 CRGB leds[NUM_LEDS];
-SolidColourState scs;
+
+SolidColourState scs(leds, NUM_LEDS);
+FireLightingState fls(leds, NUM_LEDS);
 
 LightingState* currentLightingState;
 
@@ -41,8 +44,7 @@ void setup()
     FastLED.addLeds<LED_TYPE,LED_DATA_PIN,COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
     FastLED.setBrightness(BRIGHTNESS);
 
-    scs.setColour(CRGB(0,64,0));
-    currentLightingState = &scs;
+    currentLightingState = &fls;
 }
 
 void solidColour(OSCMessage &msg)
@@ -113,6 +115,11 @@ void solidColourBlue(OSCMessage &msg)
     }
 }
 
+void setFireState(OSCMessage &msg) {
+    currentLightingState = &fls;
+    Serial.println("Got request for fire");
+}
+
 void loop()
 {
     //OSCBundle bundle;
@@ -131,6 +138,7 @@ void loop()
             msg.dispatch("/*/solidColourRed", solidColourRed);
             msg.dispatch("/*/solidColourGreen", solidColourGreen);
             msg.dispatch("/*/solidColourBlue", solidColourBlue);
+            msg.dispatch("/*/fire", setFireState);
         }
         else
         {
@@ -141,7 +149,7 @@ void loop()
     }
 
     EVERY_N_MILLISECONDS(1000/FRAMES_PER_SECOND) {
-        currentLightingState->update(leds, NUM_LEDS);
+        currentLightingState->update();
         FastLED.show();
     }
 }

@@ -1,5 +1,10 @@
 #include "solidcolourstate.h"
 
+SolidColourState::SolidColourState(CRGB leds[], int numLeds) {
+    this->numLeds = numLeds;
+    this->leds = leds;
+};
+
 void SolidColourState::setColour(CRGB colour) {
     this->colour[0] = colour[0];
     this->colour[1] = colour[1];
@@ -16,6 +21,6 @@ void SolidColourState::setBlue(uint8_t blue) {
     this->colour[2] = blue;
 };
 
-void SolidColourState::update(CRGB leds[], int numLeds) {
+void SolidColourState::update() {
     fill_solid(leds,numLeds,colour);
 };
