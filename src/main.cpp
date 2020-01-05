@@ -12,6 +12,7 @@
 #include "firelightingstate.h"
 #include "rainbowlightingstate.h"
 #include "jugglelightingstate.h"
+#include "sinelonlightingstate.h"
 
 static const char buildInfoLogString[] = "Build data: %s, %s %s";
 
@@ -30,6 +31,7 @@ SolidColourState scs(leds, NUM_LEDS);
 FireLightingState fls(leds, NUM_LEDS);
 RainbowLightingState rls(leds, NUM_LEDS);
 JuggleLightingState jls(leds, NUM_LEDS);
+SinelonLightingState sls(leds, NUM_LEDS);
 
 LightingState* currentLightingState;
 
@@ -50,7 +52,7 @@ void setup()
     FastLED.addLeds<LED_TYPE,LED_DATA_PIN,COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
     FastLED.setBrightness(brightness);
 
-    currentLightingState = &jls;
+    currentLightingState = &sls;
 }
 
 void solidColour(OSCMessage &msg)
@@ -123,17 +125,26 @@ void solidColourBlue(OSCMessage &msg)
 
 void setFireState(OSCMessage &msg) {
     currentLightingState = &fls;
+    FastLED.setBrightness(64);
     Serial.println("Got request for fire");
 }
 
 void setRainbowState(OSCMessage &msg) {
     currentLightingState = &rls;
+    FastLED.setBrightness(64);
     Serial.println("Got request for rainbow");
 }
 
 void setJuggleState(OSCMessage &msg) {
     currentLightingState = &jls;
+    FastLED.setBrightness(192);
     Serial.println("Got request for juggle");
+}
+
+void setSinelonState(OSCMessage &msg) {
+    currentLightingState = &sls;
+    FastLED.setBrightness(255);
+    Serial.println("Got request for sinelon");
 }
 
 void setBrightness(OSCMessage &msg) {
@@ -171,6 +182,7 @@ void loop()
             msg.dispatch("/*/fire", setFireState);
             msg.dispatch("/*/rainbow", setRainbowState);
             msg.dispatch("/*/juggle", setJuggleState);
+            msg.dispatch("/*/sinelon", setSinelonState);
             msg.dispatch("/*/brightness", setBrightness);
         }
         else
