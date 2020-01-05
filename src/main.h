@@ -10,7 +10,6 @@
 #define COLOR_ORDER GRB
 #define NUM_LEDS 144
 
-#define BRIGHTNESS 96
 #define FRAMES_PER_SECOND 120
 
 void setup();

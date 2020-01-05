@@ -19,6 +19,8 @@ const char password[] = "oscnet1324";
 
 char logBuffer[256];
 
+uint8_t brightness = 50;
+
 WiFiUDP Udp;
 OSCErrorCode error;
 CRGB leds[NUM_LEDS];
@@ -44,7 +46,7 @@ void setup()
     Serial.println(logBuffer);
 
     FastLED.addLeds<LED_TYPE,LED_DATA_PIN,COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
-    FastLED.setBrightness(BRIGHTNESS);
+    FastLED.setBrightness(brightness);
 
     currentLightingState = &rls;
 }
@@ -127,6 +129,20 @@ void setRainbowState(OSCMessage &msg) {
     Serial.println("Got request for rainbow");
 }
 
+void setBrightness(OSCMessage &msg) {
+    if(msg.isFloat(0))
+    {
+        uint8_t b = 100 * msg.getFloat(0);
+
+        sprintf(logBuffer, "Got brightness request for 0x%2.2X", b);
+        Serial.println(logBuffer);
+
+        FastLED.setBrightness(b);
+    } else {
+        Serial.println("Set brightness called but arg 0 was not a float");
+    }
+}
+
 void loop()
 {
     //OSCBundle bundle;
@@ -147,6 +163,7 @@ void loop()
             msg.dispatch("/*/solidColourBlue", solidColourBlue);
             msg.dispatch("/*/fire", setFireState);
             msg.dispatch("/*/rainbow", setRainbowState);
+            msg.dispatch("/*/brightness", setBrightness);
         }
         else
         {
