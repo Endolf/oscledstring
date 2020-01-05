@@ -1,6 +1,6 @@
 # OSC with FastLED
 ## Overview
-This is a test for ESP32 controlling a string of LEDs using Open Sound Control. The ESP32 will create a WiFi Access Point.
+This is a test for ESP32 controlling a string of LEDs using [Open Sound Control](http://opensoundcontrol.org/introduction-osc) and [FastLED](http://fastled.io/). The ESP32 will create a WiFi Access Point. The project uses [PlatformIO](https://platformio.org/) to build and upload to the ESP32.
 
 ## LEDs
 The code as committed controls a string of 144 WS2813 LEDs. The LED count and type can be changed in `main.h`.
