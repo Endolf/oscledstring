@@ -21,7 +21,7 @@ const char password[] = "oscnet1324";
 
 char logBuffer[256];
 
-uint8_t brightness = 50;
+uint8_t brightness = 75;
 
 WiFiUDP Udp;
 OSCErrorCode error;
@@ -52,7 +52,7 @@ void setup()
     FastLED.addLeds<LED_TYPE,LED_DATA_PIN,COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
     FastLED.setBrightness(brightness);
 
-    currentLightingState = &sls;
+    currentLightingState = &jls;
 }
 
 void solidColour(OSCMessage &msg)
@@ -125,34 +125,34 @@ void solidColourBlue(OSCMessage &msg)
 
 void setFireState(OSCMessage &msg) {
     currentLightingState = &fls;
-    FastLED.setBrightness(64);
+    FastLED.setBrightness(25);
     Serial.println("Got request for fire");
 }
 
 void setRainbowState(OSCMessage &msg) {
     currentLightingState = &rls;
-    FastLED.setBrightness(64);
+    FastLED.setBrightness(25);
     Serial.println("Got request for rainbow");
 }
 
 void setJuggleState(OSCMessage &msg) {
     currentLightingState = &jls;
-    FastLED.setBrightness(192);
+    FastLED.setBrightness(75);
     Serial.println("Got request for juggle");
 }
 
 void setSinelonState(OSCMessage &msg) {
     currentLightingState = &sls;
-    FastLED.setBrightness(255);
+    FastLED.setBrightness(65);
     Serial.println("Got request for sinelon");
 }
 
 void setBrightness(OSCMessage &msg) {
     if(msg.isFloat(0))
     {
-        uint8_t b = 100 * msg.getFloat(0);
+        uint8_t b = 255 * msg.getFloat(0);
 
-        sprintf(logBuffer, "Got brightness request for 0x%2.2X", b);
+        sprintf(logBuffer, "Got brightness request for 0x%2.2X (%u)", b, b);
         Serial.println(logBuffer);
 
         FastLED.setBrightness(b);
