@@ -9,6 +9,7 @@
 #include <FastLED.h>
 #include "lightingstate.h"
 #include "solidcolourstate.h"
+#include "flashingcolourstate.h"
 #include "firelightingstate.h"
 #include "rainbowlightingstate.h"
 #include "jugglelightingstate.h"
@@ -28,6 +29,7 @@ OSCErrorCode error;
 CRGB leds[NUM_LEDS];
 
 SolidColourState scs(leds, NUM_LEDS);
+FlashingColourState fcs(leds, NUM_LEDS);
 FireLightingState fls(leds, NUM_LEDS);
 RainbowLightingState rls(leds, NUM_LEDS);
 JuggleLightingState jls(leds, NUM_LEDS);
