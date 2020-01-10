@@ -10,6 +10,7 @@ class JuggleLightingState : public LightingState {
         // Inherited
         virtual void update();
     private:
+        static const byte numDots = 9;
 };
 
 #endif
