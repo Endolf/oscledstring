@@ -14,6 +14,7 @@
 #include "rainbowlightingstate.h"
 #include "jugglelightingstate.h"
 #include "sinelonlightingstate.h"
+#include "rainbowcolourlightingstate.h"
 
 static const char buildInfoLogString[] = "Build data: %s, %s %s";
 
@@ -34,6 +35,7 @@ FireLightingState fls(leds, NUM_LEDS);
 RainbowLightingState rls(leds, NUM_LEDS);
 JuggleLightingState jls(leds, NUM_LEDS);
 SinelonLightingState sls(leds, NUM_LEDS);
+RainbowColourLightingState rcls(leds, NUM_LEDS);
 
 LightingState* currentLightingState;
 
@@ -54,7 +56,7 @@ void setup()
     FastLED.addLeds<LED_TYPE,LED_DATA_PIN,COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
     FastLED.setBrightness(brightness);
 
-    currentLightingState = &jls;
+    currentLightingState = &rcls;
 }
 
 void solidColour(OSCMessage &msg)
@@ -62,12 +64,8 @@ void solidColour(OSCMessage &msg)
     if(msg.isInt(0))
     {
         uint32_t colourAsInt = msg.getInt(0);
-        uint8_t r,g,b;
-        r = (colourAsInt >> 24) & 255;
-        g = (colourAsInt >> 16) & 255;
-        b = (colourAsInt >> 8) & 255;
 
-        sprintf(logBuffer, "Got solid colour request for 0x%2.2X%2.2X%2.2X - (%u)", r, g, b, colourAsInt);
+        sprintf(logBuffer, "Got solid colour request for 0x%6.6X - (%u)", colourAsInt, colourAsInt);
         Serial.println(logBuffer);
 
         scs.setColour(CRGB(colourAsInt));
@@ -163,6 +161,28 @@ void setBrightness(OSCMessage &msg) {
     }
 }
 
+void flashingColour(OSCMessage &msg)
+{
+    if(msg.isInt(0))
+    {
+        uint32_t colourAsInt = msg.getInt(0);
+
+        sprintf(logBuffer, "Got flashing colour request for 0x%6.6X - (%u)", colourAsInt, colourAsInt);
+        Serial.println(logBuffer);
+
+        fcs.setColour(CRGB(colourAsInt));
+        currentLightingState = &fcs;
+    } else {
+        Serial.println("Flashing colour called but arg 0 was not an int");
+    }
+}
+
+void setRainblowColourState(OSCMessage &msg) {
+    currentLightingState = &rcls;
+    FastLED.setBrightness(25);
+    Serial.println("Got request for rainbow colour");
+}
+
 void loop()
 {
     //OSCBundle bundle;
@@ -181,11 +201,13 @@ void loop()
             msg.dispatch("/*/solidColourRed", solidColourRed);
             msg.dispatch("/*/solidColourGreen", solidColourGreen);
             msg.dispatch("/*/solidColourBlue", solidColourBlue);
+            msg.dispatch("/*/flashingColour", flashingColour);
             msg.dispatch("/*/fire", setFireState);
             msg.dispatch("/*/rainbow", setRainbowState);
             msg.dispatch("/*/juggle", setJuggleState);
             msg.dispatch("/*/sinelon", setSinelonState);
             msg.dispatch("/*/brightness", setBrightness);
+            msg.dispatch("/*/solidRainbow", setRainblowColourState);
         }
         else
         {
