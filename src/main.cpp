@@ -72,54 +72,55 @@ void solidColour(OSCMessage &msg)
         currentLightingState = &scs;
     } else {
         Serial.println("Solid colour called but arg 0 was not an int");
+        currentLightingState = &scs;
     }
 }
 
-void solidColourRed(OSCMessage &msg)
+void adjustRed(OSCMessage &msg)
 {
     if(msg.isFloat(0))
     {
         uint8_t r = 255 * msg.getFloat(0);
 
-        sprintf(logBuffer, "Got solid colour red request for 0x%2.2X", r);
+        sprintf(logBuffer, "Got adjust red request for 0x%2.2X", r);
         Serial.println(logBuffer);
 
         scs.setRed(r);
-        currentLightingState = &scs;
+        fcs.setRed(r);
     } else {
-        Serial.println("Solid colour red called but arg 0 was not a float");
+        Serial.println("Adjust red called but arg 0 was not a float");
     }
 }
 
-void solidColourGreen(OSCMessage &msg)
+void adjustGreen(OSCMessage &msg)
 {
     if(msg.isFloat(0))
     {
         uint8_t g = 255 * msg.getFloat(0);
 
-        sprintf(logBuffer, "Got solid colour green request for 0x%2.2X", g);
+        sprintf(logBuffer, "Got adjust green request for 0x%2.2X", g);
         Serial.println(logBuffer);
 
         scs.setGreen(g);
-        currentLightingState = &scs;
+        fcs.setGreen(g);
     } else {
-        Serial.println("Solid colour green called but arg 0 was not a float");
+        Serial.println("Adjust green called but arg 0 was not a float");
     }
 }
 
-void solidColourBlue(OSCMessage &msg)
+void adjustBlue(OSCMessage &msg)
 {
     if(msg.isFloat(0))
     {
         uint8_t b = 255 * msg.getFloat(0);
 
-        sprintf(logBuffer, "Got solid colour blue request for 0x%2.2X", b);
+        sprintf(logBuffer, "Got adjust blue request for 0x%2.2X", b);
         Serial.println(logBuffer);
 
         scs.setBlue(b);
-        currentLightingState = &scs;
+        fcs.setBlue(b);
     } else {
-        Serial.println("Solid colour blue called but arg 0 was not a float");
+        Serial.println("Adjust blue called but arg 0 was not a float");
     }
 }
 
@@ -174,6 +175,7 @@ void flashingColour(OSCMessage &msg)
         currentLightingState = &fcs;
     } else {
         Serial.println("Flashing colour called but arg 0 was not an int");
+        currentLightingState = &fcs;
     }
 }
 
@@ -198,9 +200,9 @@ void loop()
         if (!msg.hasError())
         {
             msg.dispatch("/*/solidColour", solidColour);
-            msg.dispatch("/*/solidColourRed", solidColourRed);
-            msg.dispatch("/*/solidColourGreen", solidColourGreen);
-            msg.dispatch("/*/solidColourBlue", solidColourBlue);
+            msg.dispatch("/*/adjustRed", adjustRed);
+            msg.dispatch("/*/adjustGreen", adjustGreen);
+            msg.dispatch("/*/adjustBlue", adjustBlue);
             msg.dispatch("/*/flashingColour", flashingColour);
             msg.dispatch("/*/fire", setFireState);
             msg.dispatch("/*/rainbow", setRainbowState);

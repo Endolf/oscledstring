@@ -9,6 +9,16 @@ void FlashingColourState::setColour(CRGB colour) {
     this->colour=colour;
 };
 
+void FlashingColourState::setRed(uint8_t red) {
+    this->colour[0] = red;
+};
+void FlashingColourState::setGreen(uint8_t green) {
+    this->colour[1] = green;
+};
+void FlashingColourState::setBlue(uint8_t blue) {
+    this->colour[2] = blue;
+};
+
 void FlashingColourState::update() {
     bool halfTime = (millis()/speed)%2==0;
     bool eightTime = (millis()/(speed/4))%2==0;
