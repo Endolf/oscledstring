@@ -6,7 +6,7 @@
 class FlashingColourState: public LightingState {
     private:
         CRGB colour = CRGB(0,0,0);
-        int speed=250; //ms for full cycle
+        int speed=500; //ms for full cycle
     public:
         FlashingColourState(CRGB leds[], int numLeds);
 

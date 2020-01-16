@@ -21,19 +21,18 @@ void FlashingColourState::setBlue(uint8_t blue) {
 
 void FlashingColourState::update() {
     bool halfTime = (millis()/speed)%2==0;
-    bool eightTime = (millis()/(speed/4))%2==0;
+    bool eighthTime = (millis()/(speed/8))%2==0;
     fill_solid(leds,numLeds,CRGB::Black);
-    int half = numLeds/2;
     int quater = numLeds/4;
     if(halfTime) {
         fill_solid(leds+quater,quater,colour);
-
+        if(eighthTime) {
+            fill_solid(leds,quater,colour);
+        }
     } else {
-        fill_solid(leds+half,quater,colour);
-
-    }
-    if(eightTime) {
-        fill_solid(leds+(quater*3),quater,colour);
-        fill_solid(leds,quater,colour);
+        fill_solid(leds+(2*quater),quater,colour);
+        if(eighthTime) {
+            fill_solid(leds+(3*quater),quater,colour);
+        }
     }
 };
