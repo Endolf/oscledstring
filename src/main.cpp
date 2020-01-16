@@ -15,6 +15,7 @@
 #include "jugglelightingstate.h"
 #include "sinelonlightingstate.h"
 #include "rainbowcolourlightingstate.h"
+#include "rainbowflashlightingstate.h"
 
 static const char buildInfoLogString[] = "Build data: %s, %s %s";
 
@@ -36,6 +37,7 @@ RainbowLightingState rls(leds, NUM_LEDS);
 JuggleLightingState jls(leds, NUM_LEDS);
 SinelonLightingState sls(leds, NUM_LEDS);
 RainbowColourLightingState rcls(leds, NUM_LEDS);
+RainbowFlashLightingState rfls(leds, NUM_LEDS);
 
 LightingState* currentLightingState;
 
@@ -179,10 +181,16 @@ void flashingColour(OSCMessage &msg)
     }
 }
 
-void setRainblowColourState(OSCMessage &msg) {
+void setRainbowColourState(OSCMessage &msg) {
     currentLightingState = &rcls;
     FastLED.setBrightness(25);
     Serial.println("Got request for rainbow colour");
+}
+
+void setRainbowFlashingState(OSCMessage &msg) {
+    currentLightingState = &rfls;
+    FastLED.setBrightness(75);
+    Serial.println("Got request for rainbow flashing");
 }
 
 void loop()
@@ -209,7 +217,8 @@ void loop()
             msg.dispatch("/*/juggle", setJuggleState);
             msg.dispatch("/*/sinelon", setSinelonState);
             msg.dispatch("/*/brightness", setBrightness);
-            msg.dispatch("/*/solidRainbow", setRainblowColourState);
+            msg.dispatch("/*/solidRainbow", setRainbowColourState);
+            msg.dispatch("/*/flashingRainbow", setRainbowFlashingState);
         }
         else
         {
