@@ -44,7 +44,7 @@ LightingState* currentLightingState;
 void setup()
 {
     Serial.begin(115200);
-    sprintf(logBuffer, buildInfoLogString, PIO_GIT_REV, __DATE__, __TIME__);
+    sprintf(logBuffer, buildInfoLogString, VERSION_INFO, __DATE__, __TIME__);
     Serial.println(logBuffer);
     WiFi.softAP(ssid, password);
     IPAddress myIP = WiFi.softAPIP();
